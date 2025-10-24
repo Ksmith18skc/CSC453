@@ -71,7 +71,7 @@ Golden tests	Compare compiler output vs. reference text files
 Property tests	Lexer round-trip, IR consistency
 Memory checks	valgrind + ASan clean runs
 Regression	make test run at each milestone tag
-🧱 Language Subset
+## 🧱 Language Subset
 
 A restricted C-like language supporting:
 
@@ -83,7 +83,7 @@ if, else, while
 
 No structs, pointers, or heap allocation; grammar kept LL(1)-friendly.
 
-🧩 Intermediate Representation
+## 🧩 Intermediate Representation
 
 Example TAC:
 
@@ -97,7 +97,7 @@ Dump with:
 
 ./build/compiler --dump-ir tests/example.c
 
-🧾 Code Generation
+## 🧾 Code Generation
 
 Target: x86-64 (System V ABI)
 
@@ -111,7 +111,7 @@ movq  %rsp, %rbp
 leave
 ret
 
-🧠 Tools & Debugging
+## 🧠 Tools & Debugging
 Tool	Use
 gdb	Step through compiler or emitted assembly
 valgrind	Detect leaks and UB
@@ -120,13 +120,13 @@ diff	Compare golden outputs
 make VERBOSE=1	Enable compiler tracing
 
 
-📚 References
+## 📚 References
 
 Saumya Debray, CSc 453: Compilers & Systems Software
 
 Lecture PDFs: Background, Lexical Analysis, Syntax Analysis, Semantic Checking, IR, Code Generation
 
-👤 Author
+## 👤 Author
 
 Name: Kory Smith
 Course: CSc 453 – Fall 2025
