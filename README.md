@@ -1,148 +1,257 @@
-# 🧠 CSC 453 — Compiler Design Project  
-_A handwritten compiler built in C, developed milestone-by-milestone._
+# 🧠 CSC 453 — Compiler Design Project
+
+> *A handwritten compiler built in C, developed milestone-by-milestone.*
+
+[![Language](https://img.shields.io/badge/language-C17-blue.svg)](https://en.wikipedia.org/wiki/C17_(C_standard_revision))
+[![Platform](https://img.shields.io/badge/platform-Linux%20x86--64-lightgrey.svg)](https://en.wikipedia.org/wiki/X86-64)
+[![License](https://img.shields.io/badge/license-Academic-green.svg)](#)
 
 ---
 
-## 📂 Repository Layout
+## 📖 Overview
 
-Top-level directories follow the course’s assignment/milestone structure:
+A complete compiler implementation targeting a C-like subset language (C--), translating source code through lexical analysis, parsing, semantic checking, intermediate representation, and x86-64 code generation. Built incrementally across structured milestones for CSC 453.
 
-
-
-Assg1 M1 – Scanner/ # Lexical Analysis (tokenizer)
-Assg1 M2 – Parser/ # Basic grammar parser
-Assg2 M1 – G1 Parse/ # Grammar 1 refinement
-Assg2 M2 – G2 Parse/ # Grammar 2 (left-factored / LL(1))
-Assg2 M3 – AST/ # Abstract Syntax Tree construction
-Assg3 M1 – Semantic/ # Symbol tables + type checking
-Assg3 M2 – IR/ # Three-address Intermediate Representation
-Assg4 M1 – CodeGen/ # x86-64 code generation
-Assg4 M2 – Final/ # Integration + testing
-docs/ # Lecture notes, diagrams, and design write-ups
-tests/ # Unit + golden test cases per phase
-Makefile # Automated build + test
-README.md # This file
-
-
-Each milestone directory is self-contained with:
-
-
-src/ → implementation (.c/.h)
-tests/ → phase-specific test inputs & outputs
-notes.md → design notes & weekly reflection
-
+**Language Features:** `int`, `bool`, `if/else`, `while`, arithmetic/logical operators  
+**Target Architecture:** x86-64 assembly (System V ABI)  
+**Intermediate Form:** Three-address code (TAC)
 
 ---
 
-## 🧭 Phase Roadmap
+## 📂 Repository Structure
 
-| Phase | Focus | Representative Folder | Output |
-|:------|:-------|:----------------------|:--------|
-| **Lexical Analysis** | Tokenize source → tokens | `Assg1 M1 – Scanner` | Token stream |
-| **Syntax Analysis 1 & 2** | Recursive-descent parser, Grammar 1→Grammar 2 | `Assg1 M2`, `Assg2 M1`, `Assg2 M2` | Parse tree |
-| **AST Construction** | Build abstract syntax tree | `Assg2 M3 – AST` | AST dump |
-| **Semantic Checking** | Scope + type analysis | `Assg3 M1 – Semantic` | Annotated AST |
-| **Intermediate Representation** | 3-address code (TAC) | `Assg3 M2 – IR` | TAC listing |
-| **Code Generation** | Map TAC → x86-64 assembly | `Assg4 M1 – CodeGen` | `.s` file |
-| **Integration & Testing** | End-to-end compiler | `Assg4 M2 – Final` | Executable program |
+```
+.
+├── Assg1 M1 – Scanner/      # Lexical analysis (tokenizer)
+├── Assg1 M2 – Parser/       # Basic recursive-descent parser
+├── Assg2 M1 – G1 Parse/     # Grammar 1 refinement
+├── Assg2 M2 – G2 Parse/     # Grammar 2 (LL(1) compatible)
+├── Assg2 M3 – AST/          # Abstract syntax tree construction
+├── Assg3 M1 – Semantic/     # Symbol tables & type checking
+├── Assg3 M2 – IR/           # Three-address intermediate code
+├── Assg4 M1 – CodeGen/      # x86-64 assembly generation
+├── Assg4 M2 – Final/        # Integration & end-to-end testing
+├── docs/                    # Design documentation & lecture notes
+├── tests/                   # Test suite (unit, golden, regression)
+├── Makefile                 # Build automation
+└── README.md
+```
+
+**Each milestone contains:**
+- `src/` — Implementation files (`.c`/`.h`)
+- `tests/` — Phase-specific test cases
+- `notes.md` — Design decisions & reflections
 
 ---
 
-## ⚙️ Build & Run
+## 🚀 Quick Start
 
 ### Build
-```bash
-make debug     # -std=c17 -Wall -Wextra -fsanitize=address,undefined
-make release   # -O2 -DNDEBUG
 
-Run
+```bash
+# Debug build (with sanitizers)
+make debug
+
+# Optimized release build
+make release
+```
+
+### Compile a Program
+
+```bash
 ./build/compiler input.c -o output.s
 as output.s -o output.o
 ld output.o -o a.out
 ./a.out
+```
 
-Clean
+### Run Tests
+
+```bash
+make test
+```
+
+### Clean Build Artifacts
+
+```bash
 make clean
-'''
+```
 
-🧪 Testing
-Category	Description
-Unit tests	Per-phase validation (scanner tokens, parser trees, etc.)
-Golden tests	Compare compiler output vs. reference text files
-Property tests	Lexer round-trip, IR consistency
-Memory checks	valgrind + ASan clean runs
-Regression	make test run at each milestone tag
-## 🧱 Language Subset
+---
 
-A restricted C-like language supporting:
+## 🧪 Testing Strategy
 
-int, bool, return
-if, else, while
-+, -, *, /, <, >, ==, !=
-{ } ; ( )
+| Category | Description |
+|:---------|:------------|
+| **Unit Tests** | Per-phase validation (tokens, parse trees, TAC) |
+| **Golden Tests** | Output comparison against reference files |
+| **Property Tests** | Lexer round-trip, IR consistency checks |
+| **Memory Safety** | Valgrind + AddressSanitizer validation |
+| **Regression** | Full suite executed at milestone tags |
 
+---
 
-No structs, pointers, or heap allocation; grammar kept LL(1)-friendly.
+## 📊 Compilation Pipeline
+
+```
+┌─────────────┐     ┌─────────┐     ┌──────────┐     ┌──────────┐
+│ Source Code │ --> │ Scanner │ --> │  Parser  │ --> │   AST    │
+│   (C--)     │     │ (Lexer) │     │  (CFG)   │     │  Builder │
+└─────────────┘     └─────────┘     └──────────┘     └──────────┘
+                                                            │
+                         ┌──────────────────────────────────┘
+                         ↓
+                    ┌──────────┐     ┌─────────┐     ┌──────────┐
+                    │ Semantic │ --> │   IR    │ --> │ Code Gen │
+                    │ Analysis │     │  (TAC)  │     │ (x86-64) │
+                    └──────────┘     └─────────┘     └──────────┘
+```
+
+### Phase Breakdown
+
+| Phase | Milestone | Output | Key Concepts |
+|:------|:----------|:-------|:-------------|
+| **Lexical Analysis** | `Assg1 M1` | Token stream | DFA, regex patterns |
+| **Syntax Analysis** | `Assg1 M2`, `Assg2 M1-M2` | Parse tree | LL(1) parsing, left-factoring |
+| **AST Construction** | `Assg2 M3` | Abstract syntax tree | Tree traversal, node types |
+| **Semantic Checking** | `Assg3 M1` | Annotated AST | Symbol tables, type inference |
+| **IR Generation** | `Assg3 M2` | TAC listing | SSA form, basic blocks |
+| **Code Generation** | `Assg4 M1` | Assembly (`.s`) | Register allocation, ABI |
+| **Integration** | `Assg4 M2` | Executable | Linking, system calls |
+
+---
+
+## 🔧 Language Specification (C--)
+
+### Supported Constructs
+
+```c
+// Variable declarations
+int x;
+bool flag;
+
+// Control flow
+if (x > 0) {
+    return x;
+} else {
+    return -x;
+}
+
+while (x < 10) {
+    x = x + 1;
+}
+
+// Expressions
+int result = (2 * x + 3) / 5;
+bool condition = (x == 0) || (x > 100);
+```
+
+### Grammar Features
+
+- **Types:** `int`, `bool`
+- **Operators:** `+`, `-`, `*`, `/`, `<`, `>`, `==`, `!=`, `||`, `&&`
+- **Statements:** `if/else`, `while`, `return`, assignment
+- **No support for:** Pointers, structs, arrays, heap allocation
+
+**Grammar Properties:** LL(1) compatible, left-factored, unambiguous
 
 ---
 
 ## 🧩 Intermediate Representation
 
-Example TAC:
+The compiler generates three-address code (TAC) for platform-independent optimization:
 
+**Source:**
+```c
+return 2 * x + 1;
+```
+
+**TAC:**
+```
 t0 = 2
 t1 = t0 * x
 t2 = t1 + 1
 return t2
+```
 
-
-Dump with:
-
+**View IR:**
+```bash
 ./build/compiler --dump-ir tests/example.c
+```
 
 ---
 
-## 🧾 Code Generation
+## ⚙️ Code Generation
 
-Target: x86-64 (System V ABI)
+### Target Platform
+- **ISA:** x86-64
+- **ABI:** System V AMD64
+- **Assembler:** GNU `as` (AT&T syntax)
 
-Register use: rdi, rsi, rdx, rcx, r8, r9 for args
+### Register Usage
+- **Arguments:** `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9`
+- **Temporaries:** `rax`, `r10`, `r11`
+- **Callee-saved:** `rbx`, `r12-r15`
 
-Function frame:
-
-pushq %rbp
-movq  %rsp, %rbp
+### Stack Frame
+```asm
+pushq   %rbp
+movq    %rsp, %rbp
+subq    $16, %rsp       # Allocate locals
 ...
 leave
 ret
+```
 
 ---
 
-## 🧠 Tools & Debugging
-Tool	Use
-gdb	Step through compiler or emitted assembly
-valgrind	Detect leaks and UB
-objdump -d	Inspect ELF binary
-diff	Compare golden outputs
-make VERBOSE=1	Enable compiler tracing
+## 🛠️ Development Tools
+
+| Tool | Purpose |
+|:-----|:--------|
+| `gdb` | Debug compiler or generated assembly |
+| `valgrind` | Memory leak detection |
+| `objdump -d` | Disassemble ELF binaries |
+| `diff` | Compare golden test outputs |
+| `make VERBOSE=1` | Enable compiler trace logs |
+
+### Debug a Generated Binary
+
+```bash
+./build/compiler test.c -o test.s
+as test.s -o test.o
+ld test.o -o test
+gdb ./test
+```
 
 ---
 
 ## 📚 References
 
-Saumya Debray, CSc 453: Compilers & Systems Software
-
-Lecture PDFs: Background, Lexical Analysis, Syntax Analysis, Semantic Checking, IR, Code Generation
+- **Course:** CSc 453: Compilers & Systems Software (Fall 2025)
+- **Instructor:** Prof. Saumya Debray, University of Arizona
+- **Lectures:** Lexical Analysis, Syntax Analysis, Semantic Checking, IR, Code Generation
+- **Textbooks:**
+  - *Compilers: Principles, Techniques, and Tools* (Dragon Book)
+  - *Engineering a Compiler* by Cooper & Torczon
 
 ---
 
-## 👤 Author
+## 📝 Project Information
 
-Name: Kory Smith
-Course: CSc 453 – Fall 2025
-Instructor: Prof. Saumya Debray
-Language: C-- (G2)
-Platform: Linux x86-64 (gcc/clang)
+- **Author:** Kory Smith
+- **Course:** CSc 453 – Fall 2025
+- **Language Standard:** C17
+- **Compiler Toolchain:** GCC/Clang
+- **Build System:** GNU Make
 
-“A compiler is a translator from meaning to mechanism.”
-— CSC 453 Lecture 0
+---
+
+## 📜 License
+
+This project is submitted for academic coursework. All rights reserved under university academic integrity policies.
+
+---
+
+> *"A compiler is a translator from meaning to mechanism."*  
+> — CSC 453 Lecture 0
