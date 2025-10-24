@@ -83,6 +83,8 @@ if, else, while
 
 No structs, pointers, or heap allocation; grammar kept LL(1)-friendly.
 
+---
+
 ## 🧩 Intermediate Representation
 
 Example TAC:
@@ -96,6 +98,8 @@ return t2
 Dump with:
 
 ./build/compiler --dump-ir tests/example.c
+
+---
 
 ## 🧾 Code Generation
 
@@ -111,6 +115,8 @@ movq  %rsp, %rbp
 leave
 ret
 
+---
+
 ## 🧠 Tools & Debugging
 Tool	Use
 gdb	Step through compiler or emitted assembly
@@ -119,12 +125,15 @@ objdump -d	Inspect ELF binary
 diff	Compare golden outputs
 make VERBOSE=1	Enable compiler tracing
 
+---
 
 ## 📚 References
 
 Saumya Debray, CSc 453: Compilers & Systems Software
 
 Lecture PDFs: Background, Lexical Analysis, Syntax Analysis, Semantic Checking, IR, Code Generation
+
+---
 
 ## 👤 Author
 
